@@ -36,7 +36,7 @@ def data_reorientation(mri: SimpleMRI) -> SimpleMRI:
     """
     A = mri.affine[:3, :3]
     flips = np.sign(A[np.argmax(np.abs(A), axis=0), np.arange(3)]).astype(int)
-    permutes = np.argmax(np.abs(A), axis=1)
+    permutes = np.argmax(np.abs(A), axis=0)
     offsets = ((1 - flips) // 2) * (np.array(mri.data.shape[:3]) - 1)
 
     # Index flip matrix
@@ -49,7 +49,6 @@ def data_reorientation(mri: SimpleMRI) -> SimpleMRI:
     T = mri.affine @ F @ P
 
     inverse_permutes = np.argmax(P[:3, :3].T, axis=1)
-
     data = (
         mri.data[:: flips[0], :: flips[1], :: flips[2], ...]
         .transpose([*inverse_permutes, *list(range(3, mri.data.ndim))])
