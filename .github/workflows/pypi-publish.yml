@@ -1,4 +1,4 @@
-name: Upload Python Package to PyPI
+name: PyPI publish
 
 on:
   release:
@@ -37,4 +37,4 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
           PYTHON_KEYRING_BACKEND: keyring.backends.null.Keyring
         run: |
-          python -m twine upload dist/*
+          python -m twine upload --skip-existing dist/*
