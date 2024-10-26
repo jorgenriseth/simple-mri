@@ -20,24 +20,15 @@ jobs:
           python-version: '3.9'  # Specify your Python version
 
       - name: Install Dependencies
-        shell: bash -l {0}
+        #shell: bash -l {0}
         run: |
           conda install -y -c conda-forge grayskull conda-build anaconda-client
-          grayskull pypi simple-mri
           conda config --add channels conda-forge 
-          conda config --add channels nodefaults
-          conda build .
+          grayskull pypi simple-mri
 
-      - name: Login to Anaconda
-        shell: bash -l {0}
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
-        run: |
-          anaconda login --username jorgenriseth --password $ANACONDA_API_TOKEN
-
-      - name: Upload Conda Package to Anaconda.org
+      - name: Build and upload conda package to Anaconda Cloud
         env:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
-          PACKAGE_PATH=$(conda build . --output)
-          anaconda upload $PACKAGE_PATH --user jorgenriseth --skip-existing
+          export PACKAGE_PATH=$(conda build . --output)
+          anaconda upload $PACKAGE_PATH
