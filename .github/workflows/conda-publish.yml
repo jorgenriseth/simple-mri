@@ -24,6 +24,7 @@ jobs:
         run: |
           conda install -y -c conda-forge grayskull conda-build anaconda-client
           grayskull pypi simple-mri
+          conda config --add channels conda-forge nodefaults
           conda build .
 
       - name: Login to Anaconda
