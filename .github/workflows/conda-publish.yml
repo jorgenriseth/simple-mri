@@ -1,13 +1,16 @@
 name: Build and Upload Conda Package
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
+  workflow_run:
+    workflows: ["pypi-publish"]
+    types:
+      - completed
 
 jobs:
   build-and-upload:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Only run if pypi-publish succeeds
 
     steps:
       - name: Checkout Repository
@@ -17,7 +20,11 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          python-version: '3.9'  # Specify your Python version
+          python-version: |
+              3.9
+              3.10
+              3.11
+              3.12
 
       - name: Install Dependencies
         shell: bash -l {0}
