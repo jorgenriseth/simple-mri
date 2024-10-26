@@ -1,9 +1,9 @@
-name: Build and Upload Conda Package
+name: Conda publish
 
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["pypi-publish"]
+    workflows: ["PyPI publish"]
     types:
       - completed
 
