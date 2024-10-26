@@ -23,15 +23,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda install -y -c conda-forge grayskull conda-build anaconda-client
-
-      - name: Generate meta.yaml with Grayskull
-        shell: bash -l {0}
-        run: |
           grayskull pypi simple-mri
-
-      - name: Build Conda Package
-        shell: bash -l {0}
-        run: |
           conda build .
 
       - name: Login to Anaconda
