@@ -33,5 +33,3 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
           conda build simple-mri --skip-existing
-          # export PACKAGE_PATH=$(conda build simple-mri --output)
-          # anaconda upload $PACKAGE_PATH --skip-existing
