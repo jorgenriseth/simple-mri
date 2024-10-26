@@ -6,6 +6,7 @@ on:
     workflows: ["pypi-publish"] # Replace with the exact name of your PyPI workflow
     types:
       - completed
+  workflow_dispatch:
 
 jobs:
   build-and-upload:
