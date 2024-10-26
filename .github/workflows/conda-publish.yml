@@ -20,14 +20,17 @@ jobs:
           python-version: '3.9'  # Specify your Python version
 
       - name: Install Dependencies
+        shell: bash -l {0}
         run: |
           conda install -y -c conda-forge grayskull conda-build anaconda-client
 
       - name: Generate meta.yaml with Grayskull
+        shell: bash -l {0}
         run: |
-          grayskull pypi simple-mri
+          grayskull pypi your_package_name
 
       - name: Build Conda Package
+        shell: bash -l {0}
         run: |
           conda build .
 
