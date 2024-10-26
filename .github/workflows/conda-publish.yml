@@ -1,11 +1,11 @@
 name: Conda publish
 
 on:
-  workflow_dispatch:
   workflow_run:
     workflows: ["PyPI publish"]
     types:
       - completed
+  workflow_dispatch:
 
 jobs:
   build-and-upload:
