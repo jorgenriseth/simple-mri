@@ -27,12 +27,19 @@ jobs:
       - name: Generate meta.yaml with Grayskull
         shell: bash -l {0}
         run: |
-          grayskull pypi your_package_name
+          grayskull pypi simple-mri
 
       - name: Build Conda Package
         shell: bash -l {0}
         run: |
           conda build .
+
+      - name: Login to Anaconda
+        shell: bash -l {0}
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}
+        run: |
+          anaconda login --username jorgenriseth --password $ANACONDA_API_TOKEN
 
       - name: Upload Conda Package to Anaconda.org
         env:
