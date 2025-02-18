@@ -3,14 +3,12 @@ name: Conda publish
 on:
   workflow_run:
     workflows: ["PyPI publish"]
-    types:
-      - completed
-  workflow_dispatch:
+    types: [completed]
 
 jobs:
   build-and-upload:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout Repository
