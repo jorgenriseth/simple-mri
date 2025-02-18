@@ -4,6 +4,7 @@ import dataclasses
 import numpy as np
 import numpy.typing as npt
 import re
+from typing import Optional
 
 
 @dataclasses.dataclass
@@ -131,15 +132,20 @@ def load_mri(
         return mri
 
 
-def save_mri(mri: SimpleMRI, path: Path, dtype: npt.DTypeLike):
-    # TODO: Figure out how to best do nibabel.arrayproxy.ArrayLike-compatible data
+def save_mri(
+    mri: SimpleMRI, path: Path, dtype: npt.DTypeLike, intent_code: Optional[int] = None
+):
     suffix_regex = re.compile(r".+(?P<suffix>(\.nii(\.gz|)|\.mg(z|h)))")
     m = suffix_regex.match(Path(path).name)
     if (m is not None) and (m.groupdict()["suffix"] in (".nii", ".nii.gz")):
         nii = nibabel.nifti1.Nifti1Image(mri.data.astype(dtype), mri.affine)
+        if intent_code is not None:
+            nii.header.set_intent(intent_code)
         nibabel.nifti1.save(nii, path)
     elif (m is not None) and (m.groupdict()["suffix"] in (".mgz", ".mgh")):
         mgh = nibabel.freesurfer.mghformat.MGHImage(mri.data.astype(dtype), mri.affine)
+        if intent_code is not None:
+            mgh.header.set_intent(intent_code)
         nibabel.freesurfer.mghformat.save(mgh, path)
     else:
         raise ValueError(f"Invalid suffix {path}, should be either '.nii', or '.mgz'")
@@ -150,8 +156,10 @@ def assert_same_space(mri1: SimpleMRI, mri2: SimpleMRI, rtol: float = 1e-5):
         mri1.affine, mri2.affine, rtol
     ):
         return
-    raise ValueError(
-        f"""MRI's not in same space (relative tolerance {rtol}.
-        Shapes: ({mri1.data.shape}, {mri2.data.shape}),
-        Affines: {mri1.affine}, {mri2.affine}"""
-    )
+    with np.printoptions(precision=5):
+        raise ValueError(
+            f"""MRI's not in same space (relative tolerance {rtol}).
+            Shapes: ({mri1.data.shape}, {mri2.data.shape}),
+            Affines: {mri1.affine}, {mri2.affine},
+            Affine max relative error: {np.nanmax(np.abs((mri1.affine - mri2.affine) / mri2.affine))}"""
+        )
