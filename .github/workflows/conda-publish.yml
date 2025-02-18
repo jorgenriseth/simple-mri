@@ -3,12 +3,14 @@ name: Conda publish
 on:
   workflow_run:
     workflows: ["PyPI publish"]
-    types: [completed]
+    types: 
+      - completed
+  workflow_dispatch: # Allows manual triggering of the workflow
 
 jobs:
   build-and-upload:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout Repository
@@ -18,11 +20,6 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          python-version: |
-              3.9
-              3.10
-              3.11
-              3.12
 
       - name: Install Dependencies
         shell: bash -l {0}
@@ -30,6 +27,9 @@ jobs:
           conda install -y -c conda-forge -c defaults grayskull conda-build anaconda-client
           conda config --add channels conda-forge 
           conda config --set anaconda_upload yes
+      - name: Generate conda recipe with GraySkull
+        shell: bash -l {0}
+        run: |
           grayskull pypi simple-mri
 
       - name: Build and upload conda package to Anaconda Cloud
